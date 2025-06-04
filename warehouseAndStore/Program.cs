@@ -3,18 +3,23 @@ public class Program
 {
     public static void Main(String[] args)
     {
-        string setInput = Console.ReadLine(); //Считывание переменной
-        var storeList = new Store(); //Присвоение переменной для вызова класса
+        //Присвоение переменных для вызова классов
+        var storeList = new Store();
         var shop = new Shop();
-        
-        if(setInput == "store getProductList") //Вызов списка для получение каталога продуктов
-            storeList.storeProducts();
+        var helper = new MyDateTimeHelper();
+        int dayNumberIso = helper.GetIsoDayOfWeekNumber();//Какая - то штука чтобы распарсить дни недели на инт
 
-        if (setInput == "Добавить продукты") 
-        {
-            string setInt = Console.ReadLine();
-            string setCount = Console.ReadLine();
-            shop.ProductsInShop(Convert.ToInt32(setInt), Convert.ToInt32(setCount));
-        }
+        shop.InitializeProductsInShop();//Метод сразу заполняющий массив продуктов
+        Console.WriteLine("Введите кол-во дней работы магазина: ");
+        string setDays = Console.ReadLine();
+        Console.WriteLine("Напишите запрос: ");
+        string setInput = Console.ReadLine(); //Считывание переменной
+        
+        if (setInput == "store getProductList") //Вызов списка для получение каталога продуктов
+            storeList.storeProducts();
+        if (setInput == "shop getProductList") //Вызов имеющихся продуктов в магазине
+            shop.GetProductListInShop();
+        if (setInput.StartsWith("shop buy")) //Вызов на покупку продуктов
+            shop.BuyProduct(setInput[2]);
     }
 }
