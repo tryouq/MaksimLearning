@@ -13,7 +13,7 @@ namespace warehouseAndStore
         public decimal Price { get; set; }
         public int Count { get; set; }
     }
-    class Shop
+    class ShopFunction
     {
         public Product[] products = new Product[5];
         public void InitializeProductsInShop()//Инициализация продуктов
@@ -39,16 +39,23 @@ namespace warehouseAndStore
         }
         public void BuyProduct(int id) 
         {
-            if (products[id].Count != 0)//Если у нас кол-во не 0, то вычитаем единицу товара
+            if (products[id].Count > 0)//Если у нас кол-во не 0, то вычитаем единицу товара
                 ActivityProductInShop(id, -1);
             else 
                 OrderProduct(id);//заказываем продукт
         }
         public void OrderProduct(int id) 
         {
-            if (products[id].Count == 0)
+            int startDay = 0;
+            var helper = new MyDateTimeHelper();//Определение переменной методы с датой
+            int todayDay = helper.GetIsoDayOfWeekNumber();//Получение переменной даты 
+            if (products[id].Id == 1 and )
                 ActivityProductInShop(id, 1);
         }
-
+        public int CountDays(int count) 
+        {
+            int countDays = 0;
+            return countDays+=count;
+        }
     }
 }
