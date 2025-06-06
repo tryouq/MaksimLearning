@@ -6,29 +6,49 @@ using System.Threading.Tasks;
 
 namespace warehouseAndStore
 {
-    public class Product  // Объявляем класс
+    public abstract class Product  // Объявляем класс
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
         public int Count { get; set; }
+        public abstract decimal GetPriceWithDiscount(DateOnly date, int visitorCount);
+        public abstract DateOnly GetArrivalDate(DateOnly date);
+    }
+    public class Colla : Product
+    {
+        public override DateOnly GetArrivalDate(DateOnly date)//to do добить все продукты с условиями
+        {
+            return date.AddDays(2);
+        }
+
+        public override decimal GetPriceWithDiscount(DateOnly date, int visitorCount)
+        {
+            if (date.IsHololliday())
+                return Price * 0.9m;
+            else
+                return Price;
+        }
     }
     class ShopFunction
     {
-        public Product[] products = new Product[5];
+        private Product[] products = new Product[5];
+        private List<(Product product, DateOnly date)> orderList = new List<(Product product, DateOnly date)>();//Лист с анонимными объектами 
         public void InitializeProductsInShop()//Инициализация продуктов
         {
              // Индексы 1-4
-            products[1] = new Product { Id = 1, Name = "Кола", Price = 70, Count = 3 };
+            products[1] = new Colla { Id = 1, Name = "Кола", Price = 70, Count = 3 };
             products[2] = new Product { Id = 2, Name = "Пиво", Price = 100, Count = 2 };
             products[3] = new Product { Id = 3, Name = "Табак", Price = 200, Count = 4 };
             products[4] = new Product { Id = 4, Name = "КФС", Price = 300, Count = 5 };
         }
-        public void ActivityProductInShop(int id, int count)//Действия с продуктом, добавление или вычитание 
+        public string GetOrderList()
         {
-            int idProduct = id;
-            int countProduct = count;
-            products[idProduct].Count += countProduct;
+            return string.Join("\n", 
+                orderList
+                    .GroupBy(item => new { item.date, item.product.Id, item.product.Name })
+                    .Select(item => $"{item.Key.Id} {item.Key.Name} {item.Count()} {item.Key.date}")
+                );
         }
         public void GetProductListInShop()//Команда для получения списка товаров, которые в данный момент есть в магазине 
         {
@@ -37,25 +57,29 @@ namespace warehouseAndStore
                 Console.WriteLine($"ID: {products[i].Id}, Название: {products[i].Name}, Цена: {products[i].Price} руб., Количество: {products[i].Count}");
             }
         }
-        public void BuyProduct(int id) 
+        public decimal BuyProduct(int id, DateOnly day, int visitorCounter) 
         {
             if (products[id].Count > 0)//Если у нас кол-во не 0, то вычитаем единицу товара
-                ActivityProductInShop(id, -1);
+            {
+                products[id].Count--;
+                return products[id].GetPriceWithDiscount(day, visitorCounter);
+            }
             else 
-                OrderProduct(id);//заказываем продукт
+            {
+                OrderProduct(id, day);//заказываем продукт
+                return 0;
+            }
         }
-        public void OrderProduct(int id) 
+        public void OrderProduct(int id, DateOnly day) 
         {
-            int startDay = 0;
-            var helper = new MyDateTimeHelper();//Определение переменной методы с датой
-            int todayDay = helper.GetIsoDayOfWeekNumber();//Получение переменной даты 
-            if (products[id].Id == 1 and )
-                ActivityProductInShop(id, 1);
+            orderList.Add(new(products[id], products[id].GetArrivalDate(day))); 
         }
-        public int CountDays(int count) 
+        public void CheckOrders(DateOnly day)
         {
-            int countDays = 0;
-            return countDays+=count;
+            foreach (var order in orderList)
+                if (order.date == day)
+                    order.product.Count += 1;
+            orderList = orderList.Where(order => order.date != day).ToList();
         }
     }
 }

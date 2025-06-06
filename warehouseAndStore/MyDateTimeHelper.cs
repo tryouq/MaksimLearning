@@ -3,12 +3,11 @@ using System.Globalization;
 
 namespace warehouseAndStore
 {
-    class MyDateTimeHelper  
+    public static class  MyDateTimeHelper  
     {
-        public int GetIsoDayOfWeekNumber()
+        public static bool IsHololliday(this DateOnly date)
         {
-            DateTime today = DateTime.Today;
-            return today.DayOfWeek == DayOfWeek.Sunday ? 7 : (int)today.DayOfWeek;
+            return date.DayOfWeek == DayOfWeek.Sunday || date.DayOfWeek == DayOfWeek.Saturday;
         }
     }
 }
