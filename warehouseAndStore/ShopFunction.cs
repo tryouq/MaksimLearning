@@ -15,7 +15,8 @@ namespace warehouseAndStore
         public abstract decimal GetPriceWithDiscount(DateOnly date, int visitorCount);
         public abstract DateOnly GetArrivalDate(DateOnly date);
     }
-    public class Colla : Product
+    //Доп условия для скидок и сроков доставки
+    public class Colla : Product 
     {
         public override DateOnly GetArrivalDate(DateOnly date)//to do добить все продукты с условиями
         {
@@ -30,6 +31,54 @@ namespace warehouseAndStore
                 return Price;
         }
     }
+    public class Beer : Product
+    {
+        public override DateOnly GetArrivalDate(DateOnly date)
+        {
+            if (date.IsHololliday())
+                return date.AddDays(3);
+            else
+                return date.AddDays(2);
+        }
+
+        public override decimal GetPriceWithDiscount(DateOnly date, int visitorCount)
+        {
+            if (visitorCount == 5)
+                return Price * 0.945m;
+            else
+                return Price;
+        }
+    }
+    public class Tabaco : Product
+    {
+        public override DateOnly GetArrivalDate(DateOnly date)
+        {
+            return date.AddDays(1);
+        }
+
+        public override decimal GetPriceWithDiscount(DateOnly date, int visitorCount)
+        {
+            return Price;
+        }
+    }
+    public class KFC : Product
+    {
+        public override DateOnly GetArrivalDate(DateOnly date)
+        {
+            if (date.IsIntDayOfWeek() % 2 == 0)
+                return date.AddDays(1);
+            else
+                return date.AddDays(2);
+        }
+
+        public override decimal GetPriceWithDiscount(DateOnly date, int visitorCount)
+        {
+            if (date.IsIntDayOfWeek() % 2 == 0)
+                return Price * 0.8m;
+            else
+                return Price;
+        }
+    }
     class ShopFunction
     {
         private Product[] products = new Product[5];
@@ -38,9 +87,9 @@ namespace warehouseAndStore
         {
              // Индексы 1-4
             products[1] = new Colla { Id = 1, Name = "Кола", Price = 70, Count = 3 };
-            products[2] = new Product { Id = 2, Name = "Пиво", Price = 100, Count = 2 };
-            products[3] = new Product { Id = 3, Name = "Табак", Price = 200, Count = 4 };
-            products[4] = new Product { Id = 4, Name = "КФС", Price = 300, Count = 5 };
+            products[2] = new Beer { Id = 2, Name = "Пиво", Price = 100, Count = 2 };
+            products[3] = new Tabaco { Id = 3, Name = "Табак", Price = 200, Count = 4 };
+            products[4] = new KFC { Id = 4, Name = "КФС", Price = 300, Count = 5 };
         }
         public string GetOrderList()
         {
